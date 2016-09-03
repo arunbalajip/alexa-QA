@@ -1,0 +1,49 @@
+{
+  "intents": [
+    {
+      "intent": SetCategoryIntent,
+      "slots": [
+        {
+     	 "name": "topic",
+          "type": "LIST_OF_TOPICS"
+        }
+      ]
+    },
+    {
+      "intent": StartCategoryIntent,
+      "slots": [
+        {
+     	 "name": "category",
+          "type": "LIST_OF_TOPICS"
+        }
+      ]
+    },
+    {
+     "intent": "SetNoOfQuestionsIntent",
+     "slots": [
+        {
+          "name": "ques_count",
+          "type": "AMAZON.NUMBER"
+        }
+      ]
+    },
+    {
+     "intent": "MySolutionIntent",
+     "slots": [
+        {
+          "name": "solution",
+          "type":"string"
+        }
+      ]
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "intent": "AMAZON.CancelIntent"
+    }
+  ]
+}

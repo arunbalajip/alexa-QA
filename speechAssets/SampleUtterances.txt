@@ -1,0 +1,12 @@
+SetCategoryIntent {topic}
+SetCategoryIntent to start {topic}
+SetCategoryIntent start {topic}
+SetCategoryIntent select {topic}
+SetNoOfQuestionsIntent {ques_count}
+SetNoOfQuestionsIntent {ques_count} questions
+MySolutionIntent {solution}
+AMAZON.StopIntent stop
+AMAZON.StopIntent stop Q&A
+AMAZON.StopIntent stop QA
+
+

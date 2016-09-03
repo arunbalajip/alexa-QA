@@ -17,7 +17,7 @@ import com.n2sglobal.QA.topic.entity.Topic;
 import com.n2sglobal.QA.user.entity.User;
 
 @RestController
-@RequestMapping(path = "topic")
+@RequestMapping(path = "user")
 public class UserController {
 
 	@Autowired

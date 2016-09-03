@@ -3,17 +3,18 @@ package com.n2sglobal.QA.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.n2sglobal.QA.exception.AlreadyExistsException;
 import com.n2sglobal.QA.exception.NotFoundException;
-import com.n2sglobal.QA.repository.TopicRepository;
 import com.n2sglobal.QA.repository.UserRepository;
-import com.n2sglobal.QA.topic.entity.Topic;
 import com.n2sglobal.QA.user.entity.User;
 
-public class UserServiceImpl implements UserService{
+@Service
+public class UserServiceImpl implements UserService {
 	@Autowired
 	UserRepository respository;
+
 	@Override
 	public List<User> findAll() {
 		return respository.findAll();

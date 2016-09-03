@@ -72,6 +72,12 @@ public class QASpeechlet implements Speechlet {
 	}
 
 	private SpeechletResponse MySolutionIntent(Intent intent, Session session) {
+		if (!session.getAttributes().containsKey(TOPICOBJ)
+				|| !session.getAttributes().containsKey(QUESTION_INDEX)
+				&& !session.getAttributes().containsKey(SCORE)) {
+			return getWelcomeResponse();
+		}
+
 		Topic topic = (Topic) session.getAttribute(TOPICOBJ);
 		int index = (int) session.getAttribute(QUESTION_INDEX);
 		int score = (int) session.getAttribute(SCORE);
@@ -80,35 +86,45 @@ public class QASpeechlet implements Speechlet {
 				.equalsIgnoreCase(topic.getQuestions().get(index).getAnswer())) {
 			sb.append(Constants.CORRECT);
 			score++;
-		}else{
+		} else {
 			sb.append(Constants.WRONG);
 		}
 		sb.append(Constants.SCORE_SHEET);
 		sb.append(score);
-		if(index >= (int)session.getAttribute(NOOFQUESTIONS)){
+		if (index >= (int) session.getAttribute(NOOFQUESTIONS)) {
 			sb.append(Constants.GOODBYE);
 			Tell(sb.toString());
 		}
 		index++;
-		String question = getQuestion(topic,index);
+		String question = getQuestion(topic, index);
 		session.setAttribute(QUESTION_INDEX, index);
-		session.setAttribute(SCORE,score);
-		return Ask(sb.toString()+question,question);
+		session.setAttribute(SCORE, score);
+		return Ask(sb.toString() + question, question);
+
 	}
 
 	private SpeechletResponse SetNoOfQuestionsIntent(Intent intent,
 			Session session) {
 		Slot noofquestion = intent.getSlot("ques_count");
-		if(Integer.parseInt(noofquestion.getValue())>0) return Tell(Constants.GOODBYE);
+		if (Integer.parseInt(noofquestion.getValue()) < 0)
+			return Tell(Constants.GOODBYE);
+
 		session.setAttribute(NOOFQUESTIONS, noofquestion.getValue());
 		session.setAttribute(QUESTION_INDEX, 0);
-		session.setAttribute(SCORE,0);
+		session.setAttribute(SCORE, 0);
 		Topic topic = (Topic) session.getAttribute(TOPICOBJ);
-		String question = getQuestion(topic,0);
+
+		if (topic == null
+				|| topic.getQuestions() == null
+				|| Integer.parseInt(noofquestion.getValue()) > topic
+						.getQuestions().size())
+			return Tell(Constants.GOODBYE);
+		String question = getQuestion(topic, 0);
 		String outputSpeech = Constants.STARTQUIZ + question;
 		return Ask(outputSpeech, question);
 	}
-	private String getQuestion(Topic topic,int index){
+
+	private String getQuestion(Topic topic, int index) {
 		Question question = topic.getQuestions().get(0);
 		StringBuffer sb = new StringBuffer();
 		if (question != null) {
@@ -119,6 +135,7 @@ public class QASpeechlet implements Speechlet {
 		}
 		return sb.toString();
 	}
+
 	private SpeechletResponse SetCategoryIntent(Intent intent, Session session) {
 		Slot topicSlot = intent.getSlot("topic");
 		session.setAttribute(TOPIC, topicSlot.getValue());
@@ -131,11 +148,13 @@ public class QASpeechlet implements Speechlet {
 				+ Constants.QUESTION_NO;
 		return Ask(param, Constants.QUESTION_NO);
 	}
+
 	private SpeechletResponse Tell(String message) {
 		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
 		outputSpeech.setText(message);
 		return SpeechletResponse.newTellResponse(outputSpeech);
-	} 
+	}
+
 	private SpeechletResponse Ask(String message, String repromptText) {
 		String speechOutput = message;
 		return newAskResponse(speechOutput, false, repromptText, false);

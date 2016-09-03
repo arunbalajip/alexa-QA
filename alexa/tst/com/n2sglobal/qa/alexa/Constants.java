@@ -14,5 +14,6 @@ public class Constants {
 	public static final String SCORE_SHEET = "Your score is ";
 	public static final String CORRECT_ANS = "The correct answer is ";
 	public static final String GOODBYE = "Thanks for learning with Alexa, Have a great day!";
+	public static final String INVALID = "Invalid input, Please try again!";
 
 }

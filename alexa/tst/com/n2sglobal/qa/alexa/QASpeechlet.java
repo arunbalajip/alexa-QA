@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.Charset;
+
 import com.amazon.speech.slu.Intent;
 import com.amazon.speech.slu.Slot;
 import com.amazon.speech.speechlet.IntentRequest;
@@ -15,10 +16,9 @@ import com.amazon.speech.speechlet.SessionStartedRequest;
 import com.amazon.speech.speechlet.Speechlet;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
-import com.amazon.speech.ui.OutputSpeech;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
-import com.amazon.speech.ui.SsmlOutputSpeech;
+import com.amazon.speech.ui.SimpleCard;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.n2sglobal.qa.dto.Question;
 import com.n2sglobal.qa.dto.Topic;
@@ -69,11 +69,14 @@ public class QASpeechlet implements Speechlet {
 	}
 
 	private SpeechletResponse MySolutionIntent(Intent intent, Session session) {
-		if (!session.getAttributes().containsKey(TOPICOBJ)
-				|| !session.getAttributes().containsKey(QUESTION_INDEX)
-				&& !session.getAttributes().containsKey(SCORE)) {
+		if (!session.getAttributes().containsKey(TOPICOBJ)) {
 			return getWelcomeResponse();
+		}else if(!session.getAttributes().containsKey(NOOFQUESTIONS)){
+			String param = Constants.WELCOME_TO + session.getAttribute(TOPIC) + "."
+					+ Constants.QUESTION_NO;
+			return Ask(param, Constants.QUESTION_NO);
 		}
+		
 
 		Topic topic = (Topic) session.getAttribute(TOPICOBJ);
 		int index = (int) session.getAttribute(QUESTION_INDEX);
@@ -102,20 +105,20 @@ public class QASpeechlet implements Speechlet {
 
 	private SpeechletResponse SetNoOfQuestionsIntent(Intent intent,
 			Session session) {
+		if (!session.getAttributes().containsKey(TOPICOBJ))
+			return getWelcomeResponse();
 		Slot noofquestion = intent.getSlot("ques_count");
 		if (Integer.parseInt(noofquestion.getValue()) < 0)
-			return Tell(Constants.GOODBYE);
+			return Tell(Constants.INVALID);
 
 		session.setAttribute(NOOFQUESTIONS, noofquestion.getValue());
 		session.setAttribute(QUESTION_INDEX, 0);
 		session.setAttribute(SCORE, 0);
 		Topic topic = (Topic) session.getAttribute(TOPICOBJ);
 
-		if (topic == null
-				|| topic.getQuestions() == null
-				|| Integer.parseInt(noofquestion.getValue()) > topic
-						.getQuestions().size())
-			return Tell(Constants.GOODBYE);
+		if (Integer.parseInt(noofquestion.getValue()) > topic.getQuestions()
+				.size())
+			return Tell(Constants.INVALID);
 		String question = getQuestion(topic, 0);
 		String outputSpeech = Constants.STARTQUIZ + question;
 		return Ask(outputSpeech, question);
@@ -148,14 +151,11 @@ public class QASpeechlet implements Speechlet {
 	}
 
 	private SpeechletResponse Tell(String message) {
-		PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-		outputSpeech.setText(message);
-		return SpeechletResponse.newTellResponse(outputSpeech);
+		return getSpeechletResponse(message, message, false);
 	}
 
 	private SpeechletResponse Ask(String message, String repromptText) {
-		String speechOutput = message;
-		return newAskResponse(speechOutput, false, repromptText, false);
+		return getSpeechletResponse(message, repromptText, true);
 	}
 
 	@Override
@@ -233,27 +233,28 @@ public class QASpeechlet implements Speechlet {
 		return text;
 	}
 
-	private SpeechletResponse newAskResponse(String stringOutput,
-			boolean isOutputSsml, String repromptText, boolean isRepromptSsml) {
-		OutputSpeech outputSpeech, repromptOutputSpeech;
-		if (isOutputSsml) {
-			outputSpeech = new SsmlOutputSpeech();
-			((SsmlOutputSpeech) outputSpeech).setSsml(stringOutput);
-		} else {
-			outputSpeech = new PlainTextOutputSpeech();
-			((PlainTextOutputSpeech) outputSpeech).setText(stringOutput);
-		}
+	private SpeechletResponse getSpeechletResponse(String speechText,
+			String repromptText, boolean isAskResponse) {
+		// Create the Simple card content.
+		SimpleCard card = new SimpleCard();
+		card.setTitle("Q&A");
+		card.setContent(speechText);
 
-		if (isRepromptSsml) {
-			repromptOutputSpeech = new SsmlOutputSpeech();
-			((SsmlOutputSpeech) repromptOutputSpeech).setSsml(repromptText);
+		// Create the plain text output.
+		PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+		speech.setText(speechText);
+
+		if (isAskResponse) {
+			// Create reprompt
+			PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
+			repromptSpeech.setText(repromptText);
+			Reprompt reprompt = new Reprompt();
+			reprompt.setOutputSpeech(repromptSpeech);
+
+			return SpeechletResponse.newAskResponse(speech, reprompt, card);
+
 		} else {
-			repromptOutputSpeech = new PlainTextOutputSpeech();
-			((PlainTextOutputSpeech) repromptOutputSpeech)
-					.setText(repromptText);
+			return SpeechletResponse.newTellResponse(speech, card);
 		}
-		Reprompt reprompt = new Reprompt();
-		reprompt.setOutputSpeech(repromptOutputSpeech);
-		return SpeechletResponse.newAskResponse(outputSpeech, reprompt);
 	}
 }

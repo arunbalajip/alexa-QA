@@ -9,15 +9,7 @@
         }
       ]
     },
-    {
-      "intent": StartCategoryIntent,
-      "slots": [
-        {
-     	 "name": "category",
-          "type": "LIST_OF_TOPICS"
-        }
-      ]
-    },
+
     {
      "intent": "SetNoOfQuestionsIntent",
      "slots": [

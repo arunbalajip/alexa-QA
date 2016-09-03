@@ -5,7 +5,7 @@ public class Constants {
 		// No need to create Constants objects
 	}
 
-	public static final String SELECT_CATEGORY = "You can select the topic int the following by saying the name";
+	public static final String SELECT_CATEGORY = "You can select the topic in the following by saying the name";
 	public static final String WELCOME_TO = "Welcome to ";
 	public static final String QUESTION_NO = "How many questions you want?";
 	public static final String STARTQUIZ = "You can stop the Q&A anytime by saying stop, Let's start the quiz";

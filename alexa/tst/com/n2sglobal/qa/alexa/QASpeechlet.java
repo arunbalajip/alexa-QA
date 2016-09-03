@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.List;
-
 import com.amazon.speech.slu.Intent;
 import com.amazon.speech.slu.Slot;
 import com.amazon.speech.speechlet.IntentRequest;
@@ -38,7 +36,6 @@ public class QASpeechlet implements Speechlet {
 	private static final String SCORE = "score";
 	private static final String TOPIC = "topic";
 	private static final String TOPICOBJ = "topicobj";
-	private Topic[] topics;
 
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session)
@@ -137,6 +134,7 @@ public class QASpeechlet implements Speechlet {
 	}
 
 	private SpeechletResponse SetCategoryIntent(Intent intent, Session session) {
+		Topic[] topics = getTopics();
 		Slot topicSlot = intent.getSlot("topic");
 		session.setAttribute(TOPIC, topicSlot.getValue());
 		for (Topic topic : topics) {
@@ -181,6 +179,11 @@ public class QASpeechlet implements Speechlet {
 			throws SpeechletException {
 		log.info("onSessionStarted requestId={}, sessionId={}",
 				arg0.getRequestId(), arg1.getSessionId());
+
+	}
+
+	private Topic[] getTopics() {
+		Topic[] topics = null;
 		String text = webserviceCall("topic");
 		ObjectMapper mapper = new ObjectMapper();
 		try {
@@ -190,13 +193,13 @@ public class QASpeechlet implements Speechlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return topics;
 	}
 
 	private SpeechletResponse getWelcomeResponse() {
-		if (topics.length == 0)
-			return null;
+
 		StringBuffer sb = new StringBuffer();
-		for (Topic topic : topics) {
+		for (Topic topic : getTopics()) {
 			sb.append(topic.getTopic());
 			sb.append(" ");
 		}

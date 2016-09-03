@@ -33,11 +33,12 @@ public class UserController {
 	public User findOne(@PathVariable("id") String id) {
 		return service.findOne(id);
 	}
-	
+	/*
 	@RequestMapping(method = RequestMethod.GET)
-	public User findMoviesByTopic(@RequestParam(value="username",required=true) String username){
+	public User findUsersByUsername(@RequestParam(value="username",required=true) String username){
 		return service.findByUsername(username);
 	}
+	*/
 	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public User create(@RequestBody User user) {
 		return service.create(user);

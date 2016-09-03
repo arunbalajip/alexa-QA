@@ -29,7 +29,7 @@ public class TopicRepositoryImpl implements TopicRepository{
 
 	@Override
 	public Topic findByTopic(String topic) {
-		TypedQuery<Topic> query = em.createNamedQuery("Topic.findByTitle", Topic.class);
+		TypedQuery<Topic> query = em.createNamedQuery("Topic.findByTopic", Topic.class);
 		query.setParameter("mtopic", topic);
 		List<Topic> topics = query.getResultList();
 		if (topics != null && topics.size() == 1) {

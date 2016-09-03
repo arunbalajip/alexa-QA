@@ -32,11 +32,11 @@ public class TopicController {
 	public Topic findOne(@PathVariable("id") String id) {
 		return service.findOne(id);
 	}
-	
+	/*
 	@RequestMapping(method = RequestMethod.GET)
 	public Topic findMoviesByTopic(@RequestParam(value="topic",required=true) String topic){
 		return service.findByTopic(topic);
-	}
+	}*/
 	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public Topic create(@RequestBody Topic topic) {
 		return service.create(topic);

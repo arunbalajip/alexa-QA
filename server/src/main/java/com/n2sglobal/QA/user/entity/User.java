@@ -16,7 +16,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table
 @NamedQueries({ 
-	@NamedQuery(name = "Topic.findAll", query = "SELECT u FROM User u ORDER BY u.name ASC"),
+	@NamedQuery(name = "User.findAll", query = "SELECT u FROM User u ORDER BY u.name ASC"),
 	@NamedQuery(name = "User.findByName", query = "SELECT u FROM User u WHERE u.name=:uname") 
 })
 public class User {

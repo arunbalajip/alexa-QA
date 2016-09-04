@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module("QA", ['ngRoute'])
+        .module("QA", ['ngRoute','ui.filters'])
         .config(moduleConfig);
 
     moduleConfig.$inject = ['$routeProvider'];
@@ -12,6 +12,11 @@
                 templateUrl: "app/views/test.tmpl.html",
                 controller: "TestController",
                 controllerAs: "testVm"
+            })
+            .when("/score", {
+                templateUrl: "app/views/scoresheet.tmpl.html",
+                controller: "scoreController",
+                controllerAs: "scoreVm"
             })
             .otherwise({
                 templateUrl: "app/views/home.tmpl.html"

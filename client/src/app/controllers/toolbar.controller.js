@@ -5,23 +5,24 @@
     'use strict';
     angular
         .module("QA")
-        .controller("TestController", TestController);
+        .controller("ToolbarController", ToolbarController);
 
-    TestController.$inject = ["testService"];
-    function TestController(testService) {
+    ToolbarController.$inject = ["testService"];
+    function ToolbarController(testService) {
         var vm = this;
-        vm.getTest = getTest;
-        getTest();
-        function getTest() {
+        getAllTopic();
+        function getAllTopic() {
             testService
-                .getTest()
+                .getAllTest()
                 .then(function (response) {
-                    vm.topic = response;
+                    vm.topics = response;
+
                 })
                 .catch(function (error) {
                     console.log(error);
                 });
         }
+
 
     }
 })();

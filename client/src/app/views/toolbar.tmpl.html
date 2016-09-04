@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default">
+<nav class="navbar navbar-default" ng-controller="ToolbarController as vm">
     <div class="container-fluid">
         <div class="navbar-header">
             <a class="navbar-brand" href="#">Q&A</a>
@@ -10,8 +10,9 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false">Take a Test<span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">Java</a></li>
-                        <li><a href="#">General Knowledge</a></li>
+                        <li ng-repeat="topic1 in vm.topics | unique:'topic'">
+                            <a href="#">{{topic1.topic}}</a>
+                        </li>
                     </ul>
                 </li>
                 <li><a href="#">Scoresheet</a></li>

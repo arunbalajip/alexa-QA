@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="QA">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MovieFlix</title>
+
+    <!-- bower:css -->
+    <!-- endinject -->
+
+    <!-- vendor:css -->
+    <!-- endinject -->
+
+    <!-- inject:css -->
+    <!-- endinject -->
+
+    <!-- app:css -->
+    <!-- endinject -->
+
+
+     <link href='https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css' rel='stylesheet'
+          type='text/css'>
+    <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src=" https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <link href='styles/common.css' rel='stylesheet' type='text/css'>
+
+
+</head>
+<body>
+
+<header ng-include="'app/views/toolbar.tmpl.html'"></header>
+<div ng-include="'app/views/home.tmpl.html'"></div>
+<div ng-view=""></div>
+
+<footer>
+    <span>2016 &copy; Q&A, Inc.</span>
+    <span class="logo">Q&A.com</span>
+</footer>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+
+<script src="app/app.js"></script>
+
+<!-- bower:js -->
+<!-- endinject -->
+
+<!-- vendor:js -->
+<!-- endinject -->
+
+<!-- inject:js -->
+<!-- endinject -->
+
+<!-- app:js -->
+<!-- endinject -->
+
+
+</body>
+</html>

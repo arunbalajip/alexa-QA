@@ -25,13 +25,15 @@
     <script src=" https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
     <link href='styles/common.css' rel='stylesheet' type='text/css'>
+    <link href='styles/home.css' rel='stylesheet' type='text/css'>
 
 
 </head>
 <body>
 
 <header ng-include="'app/views/toolbar.tmpl.html'"></header>
-<div ng-include="'app/views/home.tmpl.html'"></div>
+<!--<div ng-include="'app/views/home.tmpl.html'"></div>-->
+
 <div ng-view=""></div>
 
 <footer>
@@ -41,8 +43,10 @@
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
-
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-route.min.js"></script>
 <script src="app/app.js"></script>
+<script src="app/controllers/test.controller.js"></script>
+<script src="app/services/test.service.js"></script>
 
 <!-- bower:js -->
 <!-- endinject -->

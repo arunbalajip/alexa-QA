@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.amazon.speech.slu.Intent;
 import com.amazon.speech.slu.Slot;
@@ -21,9 +23,15 @@ import com.amazon.speech.ui.Reprompt;
 import com.amazon.speech.ui.SimpleCard;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.n2sglobal.qa.dto.Question;
+import com.n2sglobal.qa.dto.Score;
 import com.n2sglobal.qa.dto.Topic;
+import com.n2sglobal.qa.dto.User;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,23 +62,25 @@ public class QASpeechlet implements Speechlet {
 		} else if ("AMAZON.HelpIntent".equals(intentName)) {
 			return getWelcomeResponse();
 		} else if ("AMAZON.StopIntent".equals(intentName)) {
+			UpdateScore(session);
 			return Tell(Constants.GOODBYE);
 		} else if ("AMAZON.CancelIntent".equals(intentName)) {
+			UpdateScore(session);
 			return Tell(Constants.GOODBYE);
 		} else {
-			throw new SpeechletException("Invalid Intent");
+			return Tell(Constants.INVALID);
 		}
 	}
 
 	private SpeechletResponse MySolutionIntent(Intent intent, Session session) {
-		if (!session.getAttributes().containsKey(TOPICOBJ)||!session.getAttributes().containsKey(TOPIC)) {
+		if (!session.getAttributes().containsKey(TOPICOBJ)
+				|| !session.getAttributes().containsKey(TOPIC)) {
 			return getWelcomeResponse();
-		}else if(!session.getAttributes().containsKey(NOOFQUESTIONS)){
-			String param = Constants.WELCOME_TO + session.getAttribute(TOPIC) + "."
-					+ Constants.QUESTION_NO;
+		} else if (!session.getAttributes().containsKey(NOOFQUESTIONS)) {
+			String param = Constants.WELCOME_TO + session.getAttribute(TOPIC)
+					+ "." + Constants.QUESTION_NO;
 			return Ask(param, Constants.QUESTION_NO);
 		}
-		
 
 		Topic topic = (Topic) session.getAttribute(TOPICOBJ);
 		int index = (int) session.getAttribute(QUESTION_INDEX);
@@ -89,6 +99,7 @@ public class QASpeechlet implements Speechlet {
 		sb.append(score);
 		sb.append(" ");
 		if (index >= (int) session.getAttribute(NOOFQUESTIONS)) {
+			UpdateScore(session);
 			sb.append(Constants.GOODBYE);
 			Tell(sb.toString());
 		}
@@ -114,7 +125,7 @@ public class QASpeechlet implements Speechlet {
 		Topic topic = (Topic) session.getAttribute(TOPICOBJ);
 
 		if (Integer.parseInt(noofquestion.getValue()) > topic.getQuestions()
-				.size()){
+				.size()) {
 			session.setAttribute(NOOFQUESTIONS, topic.getQuestions().size());
 		}
 		String question = getQuestion(topic, 0);
@@ -142,12 +153,15 @@ public class QASpeechlet implements Speechlet {
 	private SpeechletResponse SetCategoryIntent(Intent intent, Session session) {
 		Topic[] topics = getTopics();
 		Slot topicSlot = intent.getSlot("topic");
-		session.setAttribute(TOPIC, topicSlot.getValue());
-		for (Topic topic : topics) {
-			if (topic.getTopic().equalsIgnoreCase(topicSlot.getValue())) {
-				session.setAttribute(TOPICOBJ, topic);
+		for (int i = 0; i < topics.length; i++) {
+			if (topics[i].getTopic().equalsIgnoreCase(topicSlot.getValue())) {
+				session.setAttribute(TOPIC, topics[i].getTopic());
+				session.setAttribute(TOPICOBJ, topics[i]);
+				break;
 			}
 		}
+		if (!session.getAttributes().containsKey(TOPICOBJ))
+			return Tell(Constants.INVALID);
 		String param = Constants.WELCOME_TO + topicSlot.getValue() + "."
 				+ Constants.QUESTION_NO;
 		return Ask(param, Constants.QUESTION_NO);
@@ -197,6 +211,38 @@ public class QASpeechlet implements Speechlet {
 			e.printStackTrace();
 		}
 		return topics;
+	}
+
+	private void UpdateScore(Session arg1) {
+		if (!arg1.getAttributes().containsKey(SCORE))
+			return;
+		List<Score> listofScore = new ArrayList();
+		String topic = (String) arg1.getAttribute(TOPIC);
+		String alexa_userid = arg1.getUser().getUserId();
+		User user = new User();
+		user.setAlexa_userid(alexa_userid);
+		Score score = new Score();
+		score.setScore((int) arg1.getAttribute(SCORE));
+		score.setTopic(topic);
+		score.setTimestamp(System.currentTimeMillis());
+		listofScore.add(score);
+		user.setScore(listofScore);
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonInString = null;
+		try {
+			jsonInString = mapper.writeValueAsString(user);
+			CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+			HttpPost request = new HttpPost(URL_PREFIX+"user");
+			StringEntity params = new StringEntity(jsonInString);
+			request.addHeader("content-type", "application/json");
+			request.setEntity(params);
+			httpClient.execute(request);
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	private SpeechletResponse getWelcomeResponse() {

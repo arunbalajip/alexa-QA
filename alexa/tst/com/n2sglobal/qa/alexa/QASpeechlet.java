@@ -54,22 +54,16 @@ public class QASpeechlet implements Speechlet {
 		} else if ("AMAZON.HelpIntent".equals(intentName)) {
 			return getWelcomeResponse();
 		} else if ("AMAZON.StopIntent".equals(intentName)) {
-			PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-			outputSpeech.setText(Constants.GOODBYE);
-
-			return SpeechletResponse.newTellResponse(outputSpeech);
+			return Tell(Constants.GOODBYE);
 		} else if ("AMAZON.CancelIntent".equals(intentName)) {
-			PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-			outputSpeech.setText(Constants.GOODBYE);
-
-			return SpeechletResponse.newTellResponse(outputSpeech);
+			return Tell(Constants.GOODBYE);
 		} else {
 			throw new SpeechletException("Invalid Intent");
 		}
 	}
 
 	private SpeechletResponse MySolutionIntent(Intent intent, Session session) {
-		if (!session.getAttributes().containsKey(TOPICOBJ)) {
+		if (!session.getAttributes().containsKey(TOPICOBJ)||!session.getAttributes().containsKey(TOPIC)) {
 			return getWelcomeResponse();
 		}else if(!session.getAttributes().containsKey(NOOFQUESTIONS)){
 			String param = Constants.WELCOME_TO + session.getAttribute(TOPIC) + "."
@@ -89,8 +83,11 @@ public class QASpeechlet implements Speechlet {
 		} else {
 			sb.append(Constants.WRONG);
 		}
+		sb.append(" ");
 		sb.append(Constants.SCORE_SHEET);
+		sb.append(" ");
 		sb.append(score);
+		sb.append(" ");
 		if (index >= (int) session.getAttribute(NOOFQUESTIONS)) {
 			sb.append(Constants.GOODBYE);
 			Tell(sb.toString());
@@ -117,8 +114,9 @@ public class QASpeechlet implements Speechlet {
 		Topic topic = (Topic) session.getAttribute(TOPICOBJ);
 
 		if (Integer.parseInt(noofquestion.getValue()) > topic.getQuestions()
-				.size())
-			return Tell(Constants.INVALID);
+				.size()){
+			session.setAttribute(NOOFQUESTIONS, topic.getQuestions().size());
+		}
 		String question = getQuestion(topic, 0);
 		String outputSpeech = Constants.STARTQUIZ + question;
 		return Ask(outputSpeech, question);
@@ -128,10 +126,15 @@ public class QASpeechlet implements Speechlet {
 		Question question = topic.getQuestions().get(0);
 		StringBuffer sb = new StringBuffer();
 		if (question != null) {
+			sb.append(" ");
 			sb.append(question.getQuestion());
+			sb.append(" ");
 			sb.append(question.getOption1());
+			sb.append(" ");
 			sb.append(question.getOption2());
+			sb.append(" ");
 			sb.append(question.getOption3());
+			sb.append(" ");
 		}
 		return sb.toString();
 	}

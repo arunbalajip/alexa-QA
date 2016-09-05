@@ -15,7 +15,7 @@
             })
             .when("/score", {
                 templateUrl: "app/views/scoresheet.tmpl.html",
-                controller: "scoreController",
+                controller: "ScoreController",
                 controllerAs: "scoreVm"
             })
             .otherwise({

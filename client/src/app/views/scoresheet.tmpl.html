@@ -1,6 +1,24 @@
 <div class="panel panel-default">
-    <div class="panel-heading">Panel heading</div>
+    <div class="panel-heading">Score Sheet</div>
     <table class="table">
-        ...
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email address</th>
+            <th>Topic</th>
+            <th>Score</th>
+            <th>Timestamp</th>
+        </tr>
+        </thead>
+        <tbody ng-repeat="user in scoreVm.userdetails">
+        <tr ng-repeat="score1 in user.score">
+            <td>{{user.name}}</td>
+            <td>{{user.email}}</td>
+            <td>{{score1.topic}}</td>
+            <td>{{score1.score}}</td>
+            <td>{{score1.timestamp | date :  "MM.dd.y"}}</td>
+
+        </tr>
+        </tbody>
     </table>
 </div>

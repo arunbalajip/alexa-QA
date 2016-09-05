@@ -3,13 +3,14 @@
         <h3 class="panel-title">{{testVm.topic.topic}}</h3>
     </div>
     <div class="panel-body">
-        <form ng-submit="">
-        <div ng-repeat="question in testVm.topic.questions">
-            {{$index+1}}. {{question.question}}<br>
-            <input type="radio" name="{{$index}}" value="{{question.option1}}" required> {{question.option1}}<br>
-            <input type="radio" name="{{$index}}" value="{{question.option2}}"> {{question.option2}}<br>
-            <input type="radio" name="{{$index}}" value="{{question.option3}}"> {{question.option3}}<br><br>
-        </div>
+
+        <form ng-submit="testVm.submitScore()">
+            <div ng-repeat="question in testVm.topic.questions">
+                {{$index+1}}. {{question.question}}<br>
+                <input type="radio" name="{{$index}}" ng-model="testVm.q[$index]" value="{{question.option1}}" required> {{question.option1}}<br>
+                <input type="radio" name="{{$index}}"  ng-model="testVm.q[$index]" value="{{question.option2}}"> {{question.option2}}<br>
+                <input type="radio" name="{{$index}}" ng-model="testVm.q[$index]"  value="{{question.option3}}">{{question.option3}}<br><br>
+            </div>
             <br>
             <button class="btn btn-primary" role="button">Submit</button>
         </form>

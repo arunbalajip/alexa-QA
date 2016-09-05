@@ -7,12 +7,22 @@
         .module("QA")
         .controller("ScoreController", ScoreController);
 
-    ScoreController.$inject = ["testService"];
-    function ScoreController(testService) {
+    ScoreController.$inject = ["userService"];
+    function ScoreController(userService) {
         var vm = this;
-        vm.getAllTopic = getAllTopic;
-        getTest();
-        console.log("ScoreController controller");
+        vm.getDetails = getDetails;
+        getDetails();
+        function getDetails() {
+            userService
+                .getDetails()
+                .then(function (response) {
+                    vm.userdetails = response;
+                    console.log(vm.userdetails);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
 
     }
 })();

@@ -11,6 +11,9 @@
     function TestController(testService) {
         var vm = this;
         vm.getTest = getTest;
+        vm.q = {};
+        vm.score = 0;
+        vm.submitScore = submitScore;
         getTest();
         function getTest() {
             testService
@@ -21,6 +24,18 @@
                 .catch(function (error) {
                     console.log(error);
                 });
+        }
+        function submitScore() {
+            calculateScore();
+        }
+        function calculateScore() {
+            angular.forEach(vm.q, function (value, index) {
+                if(value === vm.topic.questions[0].answer){
+                    vm.score++;
+                }
+            });
+            vm.q={};
+
         }
 
     }

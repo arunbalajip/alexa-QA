@@ -1,4 +1,4 @@
-package com.n2sglobal.qa.alexa;
+package session;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import com.amazon.speech.slu.Intent;
@@ -22,10 +23,6 @@ import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
 import com.amazon.speech.ui.SimpleCard;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.n2sglobal.qa.dto.Question;
-import com.n2sglobal.qa.dto.Score;
-import com.n2sglobal.qa.dto.Topic;
-import com.n2sglobal.qa.dto.User;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.HttpPost;
@@ -35,15 +32,15 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class QASpeechlet implements Speechlet {
+public class SessionSpeechlet implements Speechlet {
 	private static final Logger log = LoggerFactory
-			.getLogger(QASpeechlet.class);
+			.getLogger(SessionSpeechlet.class);
 	private static final String URL_PREFIX = "http://n2sglobal.vc7nqzja6p.us-west-2.elasticbeanstalk.com/api/";
 	private static final String NOOFQUESTIONS = "noques";
 	private static final String QUESTION_INDEX = "qindex";
 	private static final String SCORE = "score";
 	private static final String TOPIC = "topic";
-	private static final String TOPICOBJ = "topicobj";
+	private static final String TOPICID = "topicid";
 
 	@Override
 	public SpeechletResponse onIntent(IntentRequest request, Session session)
@@ -73,7 +70,7 @@ public class QASpeechlet implements Speechlet {
 	}
 
 	private SpeechletResponse MySolutionIntent(Intent intent, Session session) {
-		if (!session.getAttributes().containsKey(TOPICOBJ)
+		if (!session.getAttributes().containsKey(TOPICID)
 				|| !session.getAttributes().containsKey(TOPIC)) {
 			return getWelcomeResponse();
 		} else if (!session.getAttributes().containsKey(NOOFQUESTIONS)) {
@@ -81,27 +78,37 @@ public class QASpeechlet implements Speechlet {
 					+ "." + Constants.QUESTION_NO;
 			return Ask(param, Constants.QUESTION_NO);
 		}
-
-		Topic topic = (Topic) session.getAttribute(TOPICOBJ);
+		String id = (String) session.getAttribute(TOPICID);
+		;
+		Topic topic = getTopic(id);
 		int index = (int) session.getAttribute(QUESTION_INDEX);
 		int score = (int) session.getAttribute(SCORE);
 		StringBuffer sb = new StringBuffer();
 		if (intent.getSlot("soln").getValue()
-				.equalsIgnoreCase(topic.getQuestions().get(index).getAnswer())) {
+				.equalsIgnoreCase(topic.getQuestions().get(index).getAnswer())
+			/*	|| topic.getQuestions().get(index).getAnswer()
+						.contains(intent.getSlot("soln").getValue())*/
+						) {
 			sb.append(Constants.CORRECT);
 			score++;
 		} else {
 			sb.append(Constants.WRONG);
+			sb.append(" ");
+			sb.append("The correct answer is");
+			sb.append(" ");
+			sb.append(topic.getQuestions().get(index).getAnswer());
 		}
 		sb.append(" ");
 		sb.append(Constants.SCORE_SHEET);
 		sb.append(" ");
 		sb.append(score);
 		sb.append(" ");
-		if (index >= (int) session.getAttribute(NOOFQUESTIONS)) {
+
+		if (index+1 >= Integer.parseInt((String) session
+				.getAttribute(NOOFQUESTIONS))) {
 			UpdateScore(session);
 			sb.append(Constants.GOODBYE);
-			Tell(sb.toString());
+			return Tell(sb.toString());
 		}
 		index++;
 		String question = getQuestion(topic, index);
@@ -111,9 +118,23 @@ public class QASpeechlet implements Speechlet {
 
 	}
 
+	private Topic getTopic(String id) {
+		Topic topic = null;
+		String text = webserviceCall("topic", id);
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			topic = mapper.readValue(text, Topic.class);
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return topic;
+	}
+
 	private SpeechletResponse SetNoOfQuestionsIntent(Intent intent,
 			Session session) {
-		if (!session.getAttributes().containsKey(TOPICOBJ))
+		if (!session.getAttributes().containsKey(TOPICID))
 			return getWelcomeResponse();
 		Slot noofquestion = intent.getSlot("ques_count");
 		if (Integer.parseInt(noofquestion.getValue()) < 0)
@@ -122,11 +143,16 @@ public class QASpeechlet implements Speechlet {
 		session.setAttribute(NOOFQUESTIONS, noofquestion.getValue());
 		session.setAttribute(QUESTION_INDEX, 0);
 		session.setAttribute(SCORE, 0);
-		Topic topic = (Topic) session.getAttribute(TOPICOBJ);
 
+		String id = (String) session.getAttribute(TOPICID);
+		;
+		Topic topic = getTopic(id);
 		if (Integer.parseInt(noofquestion.getValue()) > topic.getQuestions()
 				.size()) {
-			session.setAttribute(NOOFQUESTIONS, topic.getQuestions().size());
+			session.setAttribute(NOOFQUESTIONS, String.valueOf(topic.getQuestions().size()));
+		}
+		else if (Integer.parseInt(noofquestion.getValue()) == 0){
+			return Tell(Constants.GOODBYE);
 		}
 		String question = getQuestion(topic, 0);
 		String outputSpeech = Constants.STARTQUIZ + question;
@@ -134,16 +160,20 @@ public class QASpeechlet implements Speechlet {
 	}
 
 	private String getQuestion(Topic topic, int index) {
-		Question question = topic.getQuestions().get(0);
+		Question question = topic.getQuestions().get(index);
 		StringBuffer sb = new StringBuffer();
 		if (question != null) {
 			sb.append(" ");
+
 			sb.append(question.getQuestion());
 			sb.append(" ");
+			sb.append("a ");
 			sb.append(question.getOption1());
 			sb.append(" ");
+			sb.append("b ");
 			sb.append(question.getOption2());
 			sb.append(" ");
+			sb.append("c ");
 			sb.append(question.getOption3());
 			sb.append(" ");
 		}
@@ -152,15 +182,16 @@ public class QASpeechlet implements Speechlet {
 
 	private SpeechletResponse SetCategoryIntent(Intent intent, Session session) {
 		Topic[] topics = getTopics();
+
 		Slot topicSlot = intent.getSlot("topic");
 		for (int i = 0; i < topics.length; i++) {
 			if (topics[i].getTopic().equalsIgnoreCase(topicSlot.getValue())) {
 				session.setAttribute(TOPIC, topics[i].getTopic());
-				session.setAttribute(TOPICOBJ, topics[i]);
+				session.setAttribute(TOPICID, topics[i].getId());
 				break;
 			}
 		}
-		if (!session.getAttributes().containsKey(TOPICOBJ))
+		if (!session.getAttributes().containsKey(TOPICID))
 			return Tell(Constants.INVALID);
 		String param = Constants.WELCOME_TO + topicSlot.getValue() + "."
 				+ Constants.QUESTION_NO;
@@ -201,7 +232,9 @@ public class QASpeechlet implements Speechlet {
 
 	private Topic[] getTopics() {
 		Topic[] topics = null;
-		String text = webserviceCall("topic");
+		
+		List<Topic> finaltopics = new ArrayList();
+		String text = webserviceCall("topic", "");
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			topics = mapper.readValue(text, Topic[].class);
@@ -210,7 +243,14 @@ public class QASpeechlet implements Speechlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return topics;
+		HashSet<String> hm = new HashSet();
+		for(Topic topic:topics){
+			if(topic.getTopic()!=null && !hm.contains(topic.getTopic())){
+				hm.add(topic.getTopic());
+				finaltopics.add(topic);
+			}
+		}
+		return finaltopics.toArray(new Topic[finaltopics.size()]);
 	}
 
 	private void UpdateScore(Session arg1) {
@@ -232,7 +272,7 @@ public class QASpeechlet implements Speechlet {
 		try {
 			jsonInString = mapper.writeValueAsString(user);
 			CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-			HttpPost request = new HttpPost(URL_PREFIX+"user");
+			HttpPost request = new HttpPost(URL_PREFIX + "user");
 			StringEntity params = new StringEntity(jsonInString);
 			request.addHeader("content-type", "application/json");
 			request.setEntity(params);
@@ -257,13 +297,13 @@ public class QASpeechlet implements Speechlet {
 		return Ask(speechOutput, speechOutput);
 	}
 
-	private String webserviceCall(String controller) {
+	private String webserviceCall(String controller, String id) {
 		InputStreamReader inputStream = null;
 		BufferedReader bufferedReader = null;
 		String text = "";
 		try {
 			String line;
-			URL url = new URL(URL_PREFIX + controller);
+			URL url = new URL(URL_PREFIX + controller + "/" + id);
 			inputStream = new InputStreamReader(url.openStream(),
 					Charset.forName("US-ASCII"));
 			bufferedReader = new BufferedReader(inputStream);

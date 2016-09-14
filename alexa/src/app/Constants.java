@@ -1,4 +1,4 @@
-package com.n2sglobal.qa.alexa;
+package app;
 
 public class Constants {
 	private Constants() {

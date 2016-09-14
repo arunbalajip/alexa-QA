@@ -1,4 +1,4 @@
-package com.n2sglobal.qa.dto;
+package session;
 
 import java.util.List;
 

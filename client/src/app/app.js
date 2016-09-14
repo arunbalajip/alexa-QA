@@ -18,6 +18,16 @@
                 controller: "ScoreController",
                 controllerAs: "scoreVm"
             })
+            .when("/addtopic", {
+                templateUrl: "app/views/addtopic.tmpl.html",
+                controller: "AddController",
+                controllerAs: "addVm"
+            })
+            .when("/addquestion", {
+                templateUrl: "app/views/addquestion.tmpl.html",
+                controller: "addController",
+                controllerAs: "addVm"
+            })
             .otherwise({
                 templateUrl: "app/views/home.tmpl.html"
             });

@@ -1,4 +1,4 @@
-package com.n2sglobal.qa.dto;
+package app;
 
 
 public class Score {

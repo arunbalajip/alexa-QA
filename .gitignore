@@ -8,3 +8,4 @@
 **/.recommenders
 **/JPAConfig.java
 **/QASpeechletRequestStreamHandler.java
+**/SessionSpeechletRequestStreamHandler.java

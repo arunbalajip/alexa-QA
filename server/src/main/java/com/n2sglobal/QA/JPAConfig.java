@@ -44,13 +44,18 @@ public class JPAConfig {
 		try {
 			ds.setDriverClass("com.mysql.jdbc.Driver");
 		
-		ds.setJdbcUrl("jdbc:mysql://aavocs98v6gu8v.cxv3d3t9gkac.us-west-2.rds.amazonaws.com:3306/ebdb");
-		ds.setUser("nemi");
-		ds.setPassword("n2sglobal");
-		ds.setAutoCommitOnClose(true);
-		ds.setIdleConnectionTestPeriod(15);
-		ds.setMaxIdleTime(15);
+		ds.setJdbcUrl("jdbc:mysql://localhost:3306/Kumaraguru?useSSL=false"); 
+		
+		//jdbc:mysql://aavocs98v6gu8v.cxv3d3t9gkac.us-west-2.rds.amazonaws.com:3306/ebdb
+		
 
+		ds.setUser("root");
+		ds.setPassword("password");
+		
+		//ds.setUser("nemi");
+		//ds.setPassword("n2sglobal");
+		ds.setAutoCommitOnClose(true);
+		
 		} catch (PropertyVetoException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

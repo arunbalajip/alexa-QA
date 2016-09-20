@@ -1,6 +1,5 @@
 package com.n2sglobal.QA.controller;
 
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,44 +12,40 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.n2sglobal.QA.service.TopicService;
-import com.n2sglobal.QA.service.QuestionService;
-import com.n2sglobal.QA.topic.entity.Question;
+import com.n2sglobal.QA.service.UserService;
 import com.n2sglobal.QA.topic.entity.Topic;
+import com.n2sglobal.QA.user.entity.User;
 
 @RestController
-@RequestMapping(path = "topic")
-public class TopicController {
+@RequestMapping(path = "user")
+public class UserController {
 
 	@Autowired
-	TopicService service;
-	QuestionService quesService;
+	UserService service;
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public List<Topic> findAll() {
+	public List<User> findAll() {
 
 		return service.findAll();
 	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "{id}")
-	public Topic findOne(@PathVariable("id") String id) {
+	public User findOne(@PathVariable("id") String id) {
 		return service.findOne(id);
 	}
 	/*
 	@RequestMapping(method = RequestMethod.GET)
-	public Topic findMoviesByTopic(@RequestParam(value="topic",required=true) String topic){
-		return service.findByTopic(topic);
-	}*/
+	public User findUsersByUsername(@RequestParam(value="username",required=true) String username){
+		return service.findByUsername(username);
+	}
+	*/
 	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public Topic create(@RequestBody Topic topic) {
-		return service.create(topic);
+	public User create(@RequestBody User user) {
+		return service.create(user);
 	}
 
 	@RequestMapping(method = RequestMethod.PUT, path = "{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public Topic update(@PathVariable("id") String id, @RequestBody Topic topic) {
-		return service.update(id, topic);
+	public User update(@PathVariable("id") String id, @RequestBody User user) {
+		return service.update(id, user);
 	}
-
-	
-	
-
 }

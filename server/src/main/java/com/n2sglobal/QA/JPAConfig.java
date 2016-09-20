@@ -51,6 +51,19 @@ public class JPAConfig {
 		ds.setIdleConnectionTestPeriod(15);
 		ds.setMaxIdleTime(15);
 
+		ds.setJdbcUrl("jdbc:mysql://localhost:3306/quzanz"); 
+		
+		//jdbc:mysql://aavocs98v6gu8v.cxv3d3t9gkac.us-west-2.rds.amazonaws.com:3306/ebdb
+		
+
+
+		ds.setUser("root");
+		ds.setPassword("n2sglobal");
+		
+		//ds.setUser("nemi");
+		//ds.setPassword("n2sglobal");
+		ds.setAutoCommitOnClose(true);
+		
 		} catch (PropertyVetoException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

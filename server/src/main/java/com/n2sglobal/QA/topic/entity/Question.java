@@ -4,6 +4,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -12,6 +15,11 @@ import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name="Question_List")
+
+@NamedQueries({
+	@NamedQuery(name = "Question.findAll", query = "SELECT m FROM Question m")
+	})
+
 public class Question {
 	@Id
 	@GenericGenerator(name = "customUUID", strategy = "uuid2")

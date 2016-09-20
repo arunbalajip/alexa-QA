@@ -3,6 +3,7 @@ package com.n2sglobal.QA.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.n2sglobal.QA.exception.AlreadyExistsException;
 import com.n2sglobal.QA.exception.NotFoundException;
@@ -10,6 +11,7 @@ import com.n2sglobal.QA.repository.QuestionRepository;
 import com.n2sglobal.QA.topic.entity.Question;
 import com.n2sglobal.QA.topic.entity.Topic;
 
+@Service
 public class QuestionServiceImp implements QuestionService {
 
 	@Autowired

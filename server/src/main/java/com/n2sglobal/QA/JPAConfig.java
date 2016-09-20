@@ -44,7 +44,7 @@ public class JPAConfig {
 		try {
 			ds.setDriverClass("com.mysql.jdbc.Driver");
 		
-		ds.setJdbcUrl("jdbc:mysql://aavocs98v6gu8v.cxv3d3t9gkac.us-west-2.rds.amazonaws.com:3306/ebdb");
+		ds.setJdbcUrl("jdbc:mysql://aap9wnuwyvx598.cxv3d3t9gkac.us-west-2.rds.amazonaws.com:3306/ebdb");
 		ds.setUser("nemi");
 		ds.setPassword("n2sglobal");
 		ds.setAutoCommitOnClose(true);

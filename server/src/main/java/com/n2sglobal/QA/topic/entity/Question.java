@@ -1,24 +1,37 @@
 package com.n2sglobal.QA.topic.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-@Table
+@Table(name="Question_List")
 public class Question {
 	@Id
 	@GenericGenerator(name = "customUUID", strategy = "uuid2")
 	@GeneratedValue(generator = "customUUID")
 	private String id;
+	@Column(unique = true)
 	String question;
 	String option1;
 	String option2;
 	String option3;
 	String answer;
+	@OneToOne
+	Topic topic;
+	
+	public Topic getTopic() {
+		return topic;
+	}
+	public void setTopic(Topic topic) {
+		this.topic = topic;
+	}
 	public String getId() {
 		return id;
 	}

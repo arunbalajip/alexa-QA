@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.n2sglobal.QA.service.TopicService;
+import com.n2sglobal.QA.service.QuestionService;
+import com.n2sglobal.QA.topic.entity.Question;
 import com.n2sglobal.QA.topic.entity.Topic;
 
 @RestController
@@ -21,6 +23,7 @@ public class TopicController {
 
 	@Autowired
 	TopicService service;
+	QuestionService quesService;
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public List<Topic> findAll() {
@@ -47,5 +50,7 @@ public class TopicController {
 		return service.update(id, topic);
 	}
 
+	
+	
 
 }

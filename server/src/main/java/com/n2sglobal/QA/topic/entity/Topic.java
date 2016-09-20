@@ -14,7 +14,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-@Table
+@Table(name="Topic_List")
 @NamedQueries({
 	@NamedQuery(name = "Topic.findAll", query = "SELECT m FROM Topic m"),
 		@NamedQuery(name = "Topic.findByTopic", query = "SELECT m FROM Topic m WHERE m.topic=:mtopic") 
@@ -26,8 +26,8 @@ public class Topic {
 	@GeneratedValue(generator = "customUUID")
 	private String id;
 	private String topic;
-	@OneToMany(cascade = { CascadeType.ALL })
-	List<Question> questions;
+	/*@OneToMany(cascade = { CascadeType.ALL })
+	List<Question> questions;*/
 	public String getId() {
 		return id;
 	}
@@ -40,10 +40,10 @@ public class Topic {
 	public void setTopic(String topic) {
 		this.topic = topic;
 	}
-	public List<Question> getQuestions() {
+	/*public List<Question> getQuestions() {
 		return questions;
 	}
 	public void setQuestions(List<Question> questions) {
 		this.questions = questions;
-	}
+	}*/
 }
